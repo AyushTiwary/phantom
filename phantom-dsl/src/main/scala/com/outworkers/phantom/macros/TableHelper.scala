@@ -467,6 +467,8 @@ class TableHelperMacro(override val c: whitebox.Context) extends WhiteboxToolbel
     val storeTpe = descriptor.hListStoreType.getOrElse(nothingTpe)
     val storeMethod = descriptor.storeMethod.getOrElse(notImplemented)
 
+    Console.println(s"Determined store type: ${showHList(storeTpe)}")
+
     val tree = q"""
        final class $clsName extends $macroPkg.TableHelper[$tableType, $recordType] {
           type Repr = $storeTpe
@@ -496,7 +498,7 @@ class TableHelperMacro(override val c: whitebox.Context) extends WhiteboxToolbel
           }
        }
 
-       new $clsName(): $macroPkg.TableHelper.Aux[$tableType, $recordType, $storeTpe]
+       new $clsName(): _root_.com.outworkers.phantom.macros.TableHelper.Aux[$tableType, $recordType, $storeTpe]
     """
 
     if (showCache) {

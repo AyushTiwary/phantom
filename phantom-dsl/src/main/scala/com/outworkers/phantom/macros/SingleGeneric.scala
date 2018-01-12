@@ -81,6 +81,11 @@ class SingleGenericMacro(val c: whitebox.Context) extends HListHelpers with Whit
     val res = mkHListType(tpe :: Nil)
     val genTpe = genericTpe(tpe)
 
+    Console.println(s"==========Trying to derive a store method type for ${printType(tpe)}========")
+    Console.println(s"The store type ${printType(store)}")
+    Console.println(s"The generic type ${showHList(generic)}")
+    Console.println(s"The result type ${showHList(res)}")
+
     val tree = if (store =:= generic) {
       info(s"Generic implementation using Shapeless for ${printType(tpe)}")
       q"""
