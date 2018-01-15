@@ -236,7 +236,7 @@ object Publishing {
   )
 
   def effectiveSettings: Seq[Def.Setting[_]] = {
-    releaseSettings ++ { if (publishingToMaven) mavenSettings else bintraySettings }
+    releaseSettings //++ { if (publishingToMaven) mavenSettings else bintraySettings }
   }
 
   /**
