@@ -75,19 +75,12 @@ object Publishing {
 
   val releaseTutFolder = settingKey[File]("The file to write the version to")
 
-  def publishTarget(settings: Seq[Def.Setting[_]]): ReleaseStep = ReleaseStep { st =>
+  def promoteToBintray: ReleaseStep = ReleaseStep { st: State =>
     val settings = Project.extract(st)
     val log = toProcessLogger(st)
-    val finalState = settings.append(bintraySettings, st)
-    val finalSettings = Project.extract(finalState)
-    val setting = finalSettings.get(publishTo)
-    log.info(s"Publishing to ${setting.map(_.toString)}")
-    finalState
+    log.info("Setting publish target to")
+    settings.append(bintraySettings, st)
   }
-
-  def promoteToBintray: ReleaseStep = publishTarget(bintraySettings)
-
-  def promoteToCentral: ReleaseStep = publishTarget(mavenSettings)
 
   def commitTutFilesAndVersion: ReleaseStep = ReleaseStep { st: State =>
     val settings = Project.extract(st)
@@ -131,7 +124,6 @@ object Publishing {
     releaseTagComment := s"Releasing ${(version in ThisBuild).value} $ciSkipSequence",
     releaseCommitMessage := s"Setting version to ${(version in ThisBuild).value} $ciSkipSequence",
     releaseProcess := Seq[ReleaseStep](
-      /*
       checkSnapshotDependencies,
       inquireVersions,
       onlyIfVersionNotSkipped(setReleaseVersion),
@@ -142,9 +134,6 @@ object Publishing {
       onlyIfVersionNotSkipped(commitTutFilesAndVersion),
       onlyIfVersionNotSkipped(releaseStepCommand("sonatypeReleaseAll")),
       onlyIfVersionNotSkipped(pushChanges)
-      */
-      promoteToBintray,
-      promoteToCentral
     )
   )
 
@@ -236,7 +225,7 @@ object Publishing {
   )
 
   def effectiveSettings: Seq[Def.Setting[_]] = {
-    releaseSettings //++ { if (publishingToMaven) mavenSettings else bintraySettings }
+    releaseSettings ++ { if (publishingToMaven) mavenSettings else bintraySettings }
   }
 
   /**
