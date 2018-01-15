@@ -75,6 +75,20 @@ object Publishing {
 
   val releaseTutFolder = settingKey[File]("The file to write the version to")
 
+  def publishTarget(settings: Seq[Def.Setting[_]]): ReleaseStep = ReleaseStep { st =>
+    val settings = Project.extract(st)
+    val log = toProcessLogger(st)
+    val finalState = settings.append(bintraySettings, st)
+    val finalSettings = Project.extract(finalState)
+    val setting = finalSettings.get(publishTo)
+    log.info(s"Publishing to ${setting.map(_.toString)}")
+    finalState
+  }
+
+  def promoteToBintray: ReleaseStep = publishTarget(bintraySettings)
+
+  def promoteToCentral: ReleaseStep = publishTarget(mavenSettings)
+
   def commitTutFilesAndVersion: ReleaseStep = ReleaseStep { st: State =>
     val settings = Project.extract(st)
     val log = toProcessLogger(st)
@@ -104,6 +118,7 @@ object Publishing {
       state
     } else {
       // nothing to commit. this happens if the version.sbt file hasn't changed.
+      log.info("Tut folder and version have not changed, there is nothing to commit!")
       st
     }
     newState
@@ -116,14 +131,20 @@ object Publishing {
     releaseTagComment := s"Releasing ${(version in ThisBuild).value} $ciSkipSequence",
     releaseCommitMessage := s"Setting version to ${(version in ThisBuild).value} $ciSkipSequence",
     releaseProcess := Seq[ReleaseStep](
+      /*
       checkSnapshotDependencies,
       inquireVersions,
       onlyIfVersionNotSkipped(setReleaseVersion),
       onlyIfVersionNotSkipped(commitReleaseVersion),
       onlyIfVersionNotSkipped(tagRelease),
+      onlyIfVersionNotSkipped(releaseStepCommand("+publishSigned")),
       onlyIfVersionNotSkipped(setNextVersion),
       onlyIfVersionNotSkipped(commitTutFilesAndVersion),
+      onlyIfVersionNotSkipped(releaseStepCommand("sonatypeReleaseAll")),
       onlyIfVersionNotSkipped(pushChanges)
+      */
+      promoteToBintray,
+      promoteToCentral
     )
   )
 
@@ -194,6 +215,7 @@ object Publishing {
         Some("releases" at nexus + "service/local/staging/deploy/maven2")
       }
     },
+    homepage := Some(url("https://(your project url)")),
     externalResolvers := Resolver.withDefaultResolvers(resolvers.value, mavenCentral = true),
     licenses += ("Outworkers License", url("https://github.com/outworkers/phantom/blob/develop/LICENSE.txt")),
     publishArtifact in Test := false,
