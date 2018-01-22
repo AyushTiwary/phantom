@@ -299,8 +299,9 @@ class PrimitiveMacro(override val c: blackbox.Context) extends BlackboxToolbelt 
     tpe.typeArgs match {
       case k :: v :: Nil => {
 
-        val kPrimitive = c.inferImplicitValue(k, silent = false)
-        val vPrimitive = c.inferImplicitValue(v, silent = false)
+        val kPrimitive = c.inferImplicitValue(k, silent = false, withMacrosDisabled = false)
+        val vPrimitive = c.inferImplicitValue(v, silent = false, withMacrosDisabled = false)
+
         Console.println(s"Key primitive: ${showCode(kPrimitive)}")
         Console.println(s"Value primitive: ${showCode(vPrimitive)}")
 
