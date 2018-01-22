@@ -32,8 +32,7 @@ lazy val ScalacOptions = Seq(
   "-unchecked", // Enable additional warnings where generated code depends on assumptions.
   "-Xcheckinit", // Wrap field accessors to throw an exception on uninitialized access.
   //"-Xfatal-warnings", // Fail the compilation if there are any warnings.
-  "-Xfuture", // Turn on future language features.
-  "-Xlog-implicits"
+  "-Xfuture" // Turn on future language features.
   //"-Yno-adapted-args" // Do not adapt an argument list (either by inserting () or creating a tuple) to match the receiver.
 )
 

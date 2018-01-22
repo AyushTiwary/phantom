@@ -15,7 +15,6 @@
  */
 package com.outworkers.phantom.tables.bugs
 
-import com.outworkers.phantom.builder.primitives.Primitives
 import com.outworkers.phantom.dsl._
 import org.joda.time.Duration
 

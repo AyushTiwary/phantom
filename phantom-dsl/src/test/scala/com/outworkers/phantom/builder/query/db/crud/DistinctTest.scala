@@ -25,7 +25,7 @@ class DistinctTest extends PhantomSuite {
 
   override def beforeAll(): Unit = {
     super.beforeAll()
-    database.tableWithCompoundKey.createSchema()
+    val _ = database.tableWithCompoundKey.createSchema()
   }
 
   it should "return distinct primary keys" in {
