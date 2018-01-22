@@ -297,7 +297,15 @@ class PrimitiveMacro(override val c: blackbox.Context) extends BlackboxToolbelt 
 
   def mapPrimitive(tpe: Type): Tree = {
     tpe.typeArgs match {
-      case k :: v :: Nil => q"""$prefix.Primitives.map[$k, $v]"""
+      case k :: v :: Nil => {
+
+        val kPrimitive = c.inferImplicitValue(k, silent = false)
+        val vPrimitive = c.inferImplicitValue(v, silent = false)
+        Console.println(s"Key primitive: ${showCode(kPrimitive)}")
+        Console.println(s"Value primitive: ${showCode(vPrimitive)}")
+
+        q"""$prefix.Primitives.map[$k, $v]($kPrimitive, $vPrimitive)"""
+      }
       case _ => c.abort(c.enclosingPosition, "Expected exactly two type arguments to be provided to map")
     }
   }
