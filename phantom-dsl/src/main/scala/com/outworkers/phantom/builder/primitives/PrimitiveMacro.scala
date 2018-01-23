@@ -38,6 +38,13 @@ class PrimitiveMacro(override val c: blackbox.Context) extends BlackboxToolbelt 
   val protocolVersion = tq"_root_.com.datastax.driver.core.ProtocolVersion"
   private[this] val versionTerm = q"version"
 
+  val codecUtilsPkg = q"_root_.com.datastax.driver.core.CodecUtils"
+  val builderPkg = q"_root_.com.outworkers.phantom.builder"
+  val cqlPkg = q"_root_.com.outworkers.phantom.builder.query.engine.CQLQuery"
+  val syntaxPkg = q"_root_.com.outworkers.phantom.builder.syntax.CQLSyntax"
+
+  val prefix = q"_root_.com.outworkers.phantom.builder.primitives"
+
   val boolType = tq"_root_.scala.Boolean"
   val strType: Tree = tq"_root_.java.lang.String"
   val intType: Tree = tq"_root_.scala.Int"
@@ -56,18 +63,13 @@ class PrimitiveMacro(override val c: blackbox.Context) extends BlackboxToolbelt 
   val inetType: Tree = tq"_root_.java.net.InetAddress"
   val bigIntType = tq"_root_.scala.math.BigInt"
   val bufferType = tq"_root_.java.nio.ByteBuffer"
+  val exceptionType = typeOf[java.lang.Exception]
   val bufferCompanion = q"_root_.java.nio.ByteBuffer"
-
+  val primitiveType: Type => Tree = tpe => tq"$prefix.Primitive[$tpe]"
   val listValueType = typeOf[ListValue[_]]
   val bufferException = typeOf[BufferUnderflowException]
   val invalidTypeException = typeOf[InvalidTypeException]
 
-  val codecUtils = q"_root_.com.datastax.driver.core.CodecUtils"
-  val builder = q"_root_.com.outworkers.phantom.builder"
-  val cql = q"_root_.com.outworkers.phantom.builder.query.engine.CQLQuery"
-  val syntax = q"_root_.com.outworkers.phantom.builder.syntax.CQLSyntax"
-
-  val prefix = q"_root_.com.outworkers.phantom.builder.primitives"
 
   def tryT(x: Tree): Tree = tq"scala.util.Try[$x]"
   def tryT(x: Type): Tree = tq"scala.util.Try[$x]"
@@ -230,7 +232,7 @@ class PrimitiveMacro(override val c: blackbox.Context) extends BlackboxToolbelt 
       fq"""
          ${fqTerm(i)} <- {
             val $tm = $inputTerm.getInt()
-            val $el = if ($tm < 0) { null } else { $codecUtils.readBytes($inputTerm, $tm) }
+            val $el = if ($tm < 0) { null } else { $codecUtilsPkg.readBytes($inputTerm, $tm) }
             Some($prefix.Primitive[${f.tpe}].deserialize($el, $versionTerm))
          }
       """
@@ -248,7 +250,7 @@ class PrimitiveMacro(override val c: blackbox.Context) extends BlackboxToolbelt 
 
     val tree = q"""new $prefix.Primitive[$tpe] {
       override def dataType: $strType = {
-        $builder.QueryBuilder.Collections
+        $builderPkg.QueryBuilder.Collections
           .tupleType(..${fields.map(_.cassandraType)})
           .queryString
       }
@@ -282,7 +284,7 @@ class PrimitiveMacro(override val c: blackbox.Context) extends BlackboxToolbelt 
       }
 
       override def asCql(tp: $tpe): $strType = {
-        $builder.QueryBuilder.Collections.tupled(..${fields.map(_.serializer)}).queryString
+        $builderPkg.QueryBuilder.Collections.tupled(..${fields.map(_.serializer)}).queryString
       }
 
       override def frozen: $boolType = true
@@ -297,7 +299,10 @@ class PrimitiveMacro(override val c: blackbox.Context) extends BlackboxToolbelt 
 
   def mapPrimitive(tpe: Type): Tree = {
     tpe.typeArgs match {
-      case k :: v :: Nil => q"""$prefix.Primitives.map[$k, $v]"""
+      case k :: v :: Nil => {
+        c.inferImplicitValue(tq"$prefix.Primitive")
+        q"""$prefix.Primitives.map[$k, $v]"""
+      }
       case _ => c.abort(c.enclosingPosition, "Expected exactly two type arguments to be provided to map")
     }
   }
@@ -327,9 +332,9 @@ class PrimitiveMacro(override val c: blackbox.Context) extends BlackboxToolbelt 
         str =>
           $comp.values.find(_.toString == str) match {
             case Some(value) => value
-            case _ => throw new Exception(
+            case _ => throw new $exceptionType(
               "Value " + str + " not found in enumeration"
-            ) with scala.util.control.NoStackTrace
+            ) with _root_.scala.util.control.NoStackTrace
           }
       )
     """
@@ -343,9 +348,9 @@ class PrimitiveMacro(override val c: blackbox.Context) extends BlackboxToolbelt 
         str =>
           $comp.values.find(_.toString == str) match {
             case Some(value) => value
-            case _ => throw new Exception(
+            case _ => throw new $exceptionType(
               "Value " + str + " not found in enumeration"
-            ) with scala.util.control.NoStackTrace
+            ) with _root_.scala.util.control.NoStackTrace
           }
       )
     """
