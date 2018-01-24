@@ -41,7 +41,7 @@ class PrimitiveMacro(override val c: blackbox.Context) extends BlackboxToolbelt 
   val codecUtilsPkg = q"_root_.com.datastax.driver.core.CodecUtils"
   val builderPkg = q"_root_.com.outworkers.phantom.builder"
   val cqlPkg = q"_root_.com.outworkers.phantom.builder.query.engine.CQLQuery"
-  val syntaxPkg = q"_root_.com.outworkers.phantom.builder.syntax.CQLSyntax"
+  val syntax = q"_root_.com.outworkers.phantom.builder.syntax.CQLSyntax"
 
   val prefix = q"_root_.com.outworkers.phantom.builder.primitives"
 
@@ -72,7 +72,6 @@ class PrimitiveMacro(override val c: blackbox.Context) extends BlackboxToolbelt 
 
 
   def tryT(x: Tree): Tree = tq"scala.util.Try[$x]"
-  def tryT(x: Type): Tree = tq"scala.util.Try[$x]"
 
   def typed[A : c.WeakTypeTag]: Symbol = weakTypeOf[A].typeSymbol
 
@@ -299,10 +298,7 @@ class PrimitiveMacro(override val c: blackbox.Context) extends BlackboxToolbelt 
 
   def mapPrimitive(tpe: Type): Tree = {
     tpe.typeArgs match {
-      case k :: v :: Nil => {
-        c.inferImplicitValue(tq"$prefix.Primitive")
-        q"""$prefix.Primitives.map[$k, $v]"""
-      }
+      case k :: v :: Nil => q"""$prefix.Primitives.map[$k, $v]"""
       case _ => c.abort(c.enclosingPosition, "Expected exactly two type arguments to be provided to map")
     }
   }
