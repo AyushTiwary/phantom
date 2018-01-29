@@ -23,9 +23,9 @@ import com.outworkers.phantom.tables._
 class EnumColumnTest extends PhantomSuite {
   override def beforeAll(): Unit = {
     super.beforeAll()
-    database.enumTable.createSchema()
-    database.namedEnumTable.createSchema()
-    database.indexedEnumTable.createSchema()
+    database.enumTable.createSchema(defaultScalaTimeout)
+    database.namedEnumTable.createSchema(defaultScalaTimeout)
+    database.indexedEnumTable.createSchema(defaultScalaTimeout)
   }
 
   it should "store a simple record and parse an Enumeration value back from the stored value" in {

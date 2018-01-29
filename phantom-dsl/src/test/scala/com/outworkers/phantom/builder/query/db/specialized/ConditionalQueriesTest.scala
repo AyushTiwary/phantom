@@ -24,7 +24,7 @@ class ConditionalQueriesTest extends PhantomSuite {
 
   override def beforeAll(): Unit = {
     super.beforeAll()
-    database.recipes.create.ifNotExists().future().block(defaultScalaTimeout)
+    database.recipes.createSchema(defaultScalaTimeout)
   }
 
   it should "update the record if the optional column based condition matches" in {
