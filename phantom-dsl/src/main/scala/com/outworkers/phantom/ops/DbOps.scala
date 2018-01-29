@@ -15,9 +15,7 @@
  */
 package com.outworkers.phantom.ops
 
-import com.datastax.driver.core.Session
 import com.outworkers.phantom.ResultSet
-import com.outworkers.phantom.builder.query.CreateQuery.DelegatedCreateQuery
 import com.outworkers.phantom.builder.query.execution._
 import com.outworkers.phantom.database.Database
 
@@ -62,7 +60,7 @@ abstract class DbOps[
   def createAsync()(
     implicit ex: ExecutionContextExecutor
   ): F[Seq[Seq[ResultSet]]] = {
-    ExecutionHelper.sequencedTraverse(tables.map(_.create.ifNotExists().delegate)) { query =>
+    ExecutionHelper.sequencedTraverse(tables.map(_.autocreate(db.space).delegate)) { query =>
       QueryContext.create(query)
     }
   }

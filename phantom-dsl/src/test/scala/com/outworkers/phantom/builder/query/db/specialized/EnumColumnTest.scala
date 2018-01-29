@@ -19,14 +19,13 @@ import com.datastax.driver.core.utils.UUIDs
 import com.outworkers.phantom.PhantomSuite
 import com.outworkers.phantom.dsl._
 import com.outworkers.phantom.tables._
-import scala.concurrent.Await
 
 class EnumColumnTest extends PhantomSuite {
   override def beforeAll(): Unit = {
     super.beforeAll()
-    Await.result(database.enumTable.create.ifNotExists().future(), defaultScalaTimeout)
-    Await.result(database.namedEnumTable.create.ifNotExists().future(), defaultScalaTimeout)
-    Await.result(database.indexedEnumTable.create.ifNotExists().future(), defaultScalaTimeout)
+    database.enumTable.createSchema()
+    database.namedEnumTable.createSchema()
+    database.indexedEnumTable.createSchema()
   }
 
   it should "store a simple record and parse an Enumeration value back from the stored value" in {

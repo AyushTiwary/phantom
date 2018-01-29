@@ -291,7 +291,7 @@ abstract class QueryContext[P[_], F[_], Timeout](
       keySpace: KeySpace,
       ctx: ExecutionContextExecutor
     ): Seq[ResultSet] = {
-      blockAwait(table.autocreate(keySpace).future(), timeout)
+      blockAwait(QueryContext.create(table.autocreate(keySpace).delegate), timeout)
     }
 
     def storeRecord[V1, Repr <: HList, HL <: HList, Out <: HList](input: V1)(
