@@ -35,7 +35,7 @@ object Availability {
   }
 }
 
-trait CustomPrimitives {
+object CustomPrimitives {
 
   implicit val availabilityPrimitive: Primitive[Availability] = {
     Primitive.derive[Availability, String](_.toString)(Availability.apply)
@@ -50,13 +50,15 @@ trait CustomPrimitives {
   }
 }
 
+import CustomPrimitives._
+
 case class MyEntity(
   key: String,
   timestamp: DateTime,
   durationByState: Map[Availability, Duration]
 )
 
-abstract class MapTableBug extends Table[MapTableBug, MyEntity] with CustomPrimitives {
+abstract class MapTableBug extends Table[MapTableBug, MyEntity] {
 
   object key extends StringColumn with PartitionKey
   object timestamp extends DateTimeColumn

@@ -16,10 +16,11 @@
 package com.outworkers.phantom.column
 
 import com.outworkers.phantom.builder.query.engine.CQLQuery
+import com.outworkers.phantom.macros.ColumnHelper
 
 import scala.reflect.runtime.{currentMirror => cm}
 
-trait AbstractColumn[@specialized(Int, Double, Float, Long, Boolean, Short) T] {
+abstract class AbstractColumn[@specialized(Int, Double, Float, Long, Boolean, Short) T] { self =>
 
   /**
     * Provides the serialisation mechanism of a value to a CQL string.
@@ -55,9 +56,9 @@ trait AbstractColumn[@specialized(Int, Double, Float, Long, Boolean, Short) T] {
     cm.reflect(this).symbol.name.toTypeName.decodedName.toString
   }
 
-  def name: String = _name
+  def name(implicit helper: ColumnHelper[self.type]): String = helper.columnName(_name)
 
-  def qb: CQLQuery = CQLQuery(name).forcePad.append(cassandraType)
+  def qb(implicit helper: ColumnHelper[self.type]): CQLQuery = CQLQuery(name).forcePad.append(cassandraType)
 
   /**
     * Whether or not this is a compound primitive type that should free if the

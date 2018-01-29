@@ -15,7 +15,7 @@
  */
 package com.outworkers.phantom.tables
 
-import com.outworkers.phantom.NamingStrategy
+import com.outworkers.phantom.TableNaming
 import org.scalatest.{FlatSpec, Matchers}
 
 class NamingStrategyTests extends FlatSpec with Matchers {
@@ -25,32 +25,32 @@ class NamingStrategyTests extends FlatSpec with Matchers {
   }
 
   it should "convert a name to snake_case from camelCase" in {
-    NamingStrategy.SnakeCase.caseInsensitive.inferName("tableName") shouldEqual "table_name"
+    TableNaming.SnakeCase.caseInsensitive.inferName("tableName") shouldEqual "table_name"
   }
 
   it should "convert escape a name and convert to snake_case from camelCase" in {
-    NamingStrategy.SnakeCase.caseSensitive.inferName("tableName") shouldEqual "'table_name'"
+    TableNaming.SnakeCase.caseSensitive.inferName("tableName") shouldEqual "'table_name'"
   }
 
   it should "convert escape a name and convert to camelCase from snake_case" in {
-    NamingStrategy.CamelCase.caseSensitive.inferName("camel_case") shouldEqual "'camelCase'"
+    TableNaming.CamelCase.caseSensitive.inferName("camel_case") shouldEqual "'camelCase'"
   }
 
   it should "preserve a table name using an identity strategy" in {
-    NamingStrategy.Default.caseInsensitive.inferName("snake_case") shouldEqual "snake_case"
+    TableNaming.Default.caseInsensitive.inferName("snake_case") shouldEqual "snake_case"
   }
 
   it should "escape and preserve a table name using an identity strategy" in {
-    NamingStrategy.Default.caseSensitive.inferName("snake_case") shouldEqual "'snake_case'"
+    TableNaming.Default.caseSensitive.inferName("snake_case") shouldEqual "'snake_case'"
   }
 
   it should "convert a name and convert to camelCase from snake_case" in {
-    NamingStrategy.CamelCase.caseInsensitive.inferName("snake_case") shouldEqual "snakeCase"
+    TableNaming.CamelCase.caseInsensitive.inferName("snake_case") shouldEqual "snakeCase"
   }
 
 
   it should "convert and escape a name to camelCase from snake_case" in {
-    NamingStrategy.CamelCase.caseSensitive.inferName("snake_case") shouldEqual "'snakeCase'"
+    TableNaming.CamelCase.caseSensitive.inferName("snake_case") shouldEqual "'snakeCase'"
   }
 
   it should "alter the name of a table if a NamingStrategy exists in scope" in {

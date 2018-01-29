@@ -2,7 +2,7 @@ package com.outworkers.phantom.macros.tables
 
 import com.outworkers.phantom.dsl._
 import com.outworkers.phantom.tables.Article
-import com.outworkers.phantom.NamingStrategy.SnakeCase.caseSensitive
+import com.outworkers.phantom.TableNaming.SnakeCase.caseSensitive
 
 abstract class NamedArticlesByAuthor extends Table[NamedArticlesByAuthor, Article] {
   object id extends UUIDColumn with PartitionKey

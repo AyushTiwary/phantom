@@ -22,7 +22,7 @@ import com.outworkers.phantom.column.AbstractColumn
 import com.outworkers.phantom.connectors.KeySpace
 import com.outworkers.phantom.keys.{ClusteringOrder, PartitionKey, PrimaryKey, SASIIndex}
 import com.outworkers.phantom.macros.toolbelt.WhiteboxToolbelt
-import com.outworkers.phantom.{CassandraTable, NamingStrategy, Row}
+import com.outworkers.phantom.{CassandraTable, ColumnNaming, Row, TableNaming}
 import shapeless.HList
 
 import scala.collection.immutable.ListMap
@@ -412,14 +412,16 @@ class TableHelperMacro(override val c: whitebox.Context) extends WhiteboxToolbel
     memoize[(Type, Type), Tree](WhiteboxToolbelt.tableHelperCache)(tt -> rt, { case (t, r) => macroImpl(t, r)})
   }
 
+
   /**
-    * This will search the implicit scope for a [[NamingStrategy]] defined.
+    * This will search the implicit scope for a [[TableNaming]] defined.
     * If none is found, this will return the table name as is.
+    *
     * @param table The name of the table as derived from the user input.
-    * @return A new table name adjusted according to the [[NamingStrategy]].
+    * @return A new table name adjusted according to the [[TableNaming]].
     */
   def adjustedTableName(table: String): Tree = {
-    val strategy = c.inferImplicitValue(typeOf[NamingStrategy], silent = true)
+    val strategy = c.inferImplicitValue(typeOf[TableNaming.Strategy], silent = true)
 
     if (strategy.isEmpty) {
       info("No NamingStrategy found in implicit scope.")
