@@ -89,7 +89,7 @@ lazy val Versions = new {
   val logback = "1.2.3"
   val util = "0.40.0"
   val json4s = "3.5.1"
-  val datastax = "3.4.0"
+  val datastax = "4.0.0-alpha3"
   val scalatest = "3.0.4"
   val shapeless = "2.3.2"
   val thrift = "0.8.0"
@@ -267,7 +267,7 @@ lazy val phantomDsl = (project in file("phantom-dsl"))
       "com.chuusai"                  %% "shapeless"                         % Versions.shapeless,
       "joda-time"                    %  "joda-time"                         % Versions.joda,
       "org.joda"                     %  "joda-convert"                      % Versions.jodaConvert,
-      "com.datastax.cassandra"       %  "cassandra-driver-core"             % Versions.datastax,
+      "com.datastax.oss"             %  "java-driver-core"                  % Versions.datastax,
       "org.json4s"                   %% "json4s-native"                     % Versions.json4s % Test,
       "io.circe"                     %% "circe-parser"                      % Versions.circe % Test,
       "io.circe"                     %% "circe-generic"                     % Versions.circe % Test,
@@ -311,7 +311,7 @@ lazy val phantomConnectors = (project in file("phantom-connectors"))
     moduleName := "phantom-connectors",
     crossScalaVersions := Versions.scalaAll,
     libraryDependencies ++= Seq(
-      "com.datastax.cassandra"       %  "cassandra-driver-core"             % Versions.datastax,
+      "com.datastax.oss"             %  "java-driver-core"             % Versions.datastax,
       "com.outworkers"               %% "util-testing"                      % Versions.util % Test
     )
   ).enablePlugins(
@@ -372,7 +372,7 @@ lazy val phantomSbtPlugin = (project in file("phantom-sbt"))
     sbtPlugin := true,
     publishArtifact := !Publishing.publishingToMaven && { scalaVersion.value.startsWith("2.10") },
     libraryDependencies ++= Seq(
-      "com.datastax.cassandra" % "cassandra-driver-core" % Versions.datastax,
+      "com.datastax.oss"  % "java-driver-core" % Versions.datastax,
       "org.cassandraunit" % "cassandra-unit"  % Versions.cassandraUnit excludeAll (
         ExclusionRule("org.slf4j", "slf4j-log4j12"),
         ExclusionRule("org.slf4j", "slf4j-jdk14")
