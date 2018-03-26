@@ -56,7 +56,7 @@ class PrimitivesTest extends FlatSpec with Matchers with GeneratorDrivenProperty
 
   it should "produce an empty bytebuffer for an empty collection" in {
     val empty = Primitives.emptyCollection
-    empty.array().size shouldEqual 0
+    empty.array().length shouldEqual 0
   }
 
   it should "throw an supported version error when neccessary" in {

@@ -141,6 +141,24 @@ class InsertTest extends PhantomSuite {
     }
   }
 
+  it should "support serializing/de-serializing unset lists " in {
+    val row = gen[MyTestRow].copy(stringlist = List.empty)
+
+    val chain = for {
+      store <- database.listCollectionTable.insert
+        .value(_.key, row.key)
+        .value(_.optionA, row.optionA)
+        .future()
+      one <- database.listCollectionTable.select.where(_.key eqs row.key).one
+    } yield one
+
+    whenReady(chain) { res =>
+      res.value shouldEqual row
+      res.value.stringlist.isEmpty shouldEqual true
+    }
+  }
+
+
   it should "support serializing/de-serializing to List " in {
     val row = gen[MyTestRow]
 
@@ -199,4 +217,6 @@ class InsertTest extends PhantomSuite {
       res.value shouldEqual sample
     }
   }
+
+
 }

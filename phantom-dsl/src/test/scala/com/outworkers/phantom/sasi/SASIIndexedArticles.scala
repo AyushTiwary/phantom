@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.outworkers.phantom.tables.sasi
+package com.outworkers.phantom.sasi
 
 import com.outworkers.phantom.dsl._
 import com.outworkers.phantom.tables.Article
@@ -23,7 +23,9 @@ abstract class SASIIndexedArticles extends Table[SASIIndexedArticles, Article] {
   object name extends StringColumn
 
   object orderId extends LongColumn with SASIIndex[Mode.Prefix] {
-    override def analyzer: StandardAnalyzer[Mode.Prefix] = Analyzer.StandardAnalyzer[Mode.Prefix]().enableStemming(true)
+    override def analyzer: StandardAnalyzer[Mode.Prefix] = {
+      Analyzer.StandardAnalyzer[Mode.Prefix]().enableStemming(true)
+    }
   }
 }
 
