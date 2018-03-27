@@ -15,7 +15,6 @@
  */
 package com.outworkers.phantom.connectors
 
-import com.datastax.driver.core.PoolingOptions
 
 /**
  * A builder for KeySpace instances.

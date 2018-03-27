@@ -18,11 +18,10 @@ package com.outworkers.phantom.builder.primitives
 import java.nio.ByteBuffer
 import java.util.Date
 
-import com.datastax.driver.core.exceptions.InvalidTypeException
-import com.datastax.driver.core.{LocalDate, ProtocolVersion}
+import com.datastax.oss.driver.api.core.{DriverExecutionException, ProtocolVersion}
 import com.outworkers.phantom.Row
 import com.outworkers.phantom.builder.QueryBuilder
-import org.joda.time.DateTime
+import org.joda.time.{DateTime, LocalDate}
 
 import scala.annotation.implicitNotFound
 import scala.util.control.NoStackTrace
@@ -57,7 +56,7 @@ abstract class Primitive[RR] {
   )(pf: PartialFunction[ByteBuffer, T]): T = {
     source match {
       case Primitive.nullValue => Primitive.nullValue.asInstanceOf[T]
-      case b if b.remaining() != len => throw new InvalidTypeException(s"Expected $len, but got ${b.remaining()}. $msg")
+      case b if b.remaining() != len => throw new Exception(s"Expected $len, but got ${b.remaining()}. $msg")
       case bytes @ _ => pf(bytes)
     }
   }
