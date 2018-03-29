@@ -15,11 +15,12 @@
  */
 package com.outworkers.phantom.connectors
 
-import com.datastax.driver.core.{VersionNumber => DatastaxVersionNumber}
+import com.datastax.oss.driver.api.core.CassandraVersion
+
 
 sealed trait VersionBuilder {
-  def apply(major: Int, minor: Int, patch: Int): DatastaxVersionNumber = {
-    DatastaxVersionNumber.parse(s"$major.$minor.$patch")
+  def apply(major: Int, minor: Int, patch: Int): CassandraVersion = {
+    CassandraVersion.parse(s"$major.$minor.$patch")
   }
 }
 

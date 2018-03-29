@@ -15,29 +15,29 @@
  */
 package com.outworkers.phantom.connectors
 
-import com.datastax.driver.core.{ProtocolVersion, Session}
+import com.datastax.oss.driver.api.core.{CqlSession, DefaultProtocolVersion, ProtocolVersion}
 
 trait SessionAugmenter {
 
-  def session: Session
+  def session: CqlSession
 
   def protocolVersion: ProtocolVersion = {
-    session.getCluster.getConfiguration.getProtocolOptions.getProtocolVersion
+    DefaultProtocolVersion.V5
   }
 
   def isNewerThan(pv: ProtocolVersion): Boolean = {
-    protocolVersion.compareTo(pv) > 0
+    protocolVersion.getCode > pv.getCode
   }
 
-  def v3orNewer: Boolean = isNewerThan(ProtocolVersion.V2)
+  def v3orNewer: Boolean = isNewerThan(DefaultProtocolVersion.V3)
 
-  def protocolConsistency: Boolean = isNewerThan(ProtocolVersion.V1)
+  def protocolConsistency: Boolean = isNewerThan(DefaultProtocolVersion.V3)
 
-  def v4orNewer: Boolean = isNewerThan(ProtocolVersion.V3)
+  def v4orNewer: Boolean = isNewerThan(DefaultProtocolVersion.V4)
 }
 
 trait SessionAugmenterImplicits {
-  implicit class RichSession(val session: Session) extends SessionAugmenter
+  implicit class RichSession(val session: CqlSession) extends SessionAugmenter
 }
 
 case class KeySpace(name: String)

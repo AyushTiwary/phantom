@@ -40,7 +40,7 @@ class KeySpaceBuilder(clusterBuilder: ClusterBuilder) {
     */
   def noHeartbeat(): KeySpaceBuilder = {
     new KeySpaceBuilder(clusterBuilder andThen (
-      _.withPoolingOptions(new PoolingOptions().setHeartbeatIntervalSeconds(0)))
+      _.(new PoolingOptions().setHeartbeatIntervalSeconds(0)))
     )
   }
 

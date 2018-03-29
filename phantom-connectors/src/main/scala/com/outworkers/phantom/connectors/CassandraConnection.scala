@@ -15,7 +15,6 @@
  */
 package com.outworkers.phantom.connectors
 
-import com.datastax.oss.driver.api.core.CqlSession
 import com.datastax.oss.driver.api.core.session.Session
 
 import scala.collection.JavaConverters._

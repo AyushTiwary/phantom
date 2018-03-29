@@ -15,7 +15,9 @@
  */
 package com.outworkers.phantom.connectors
 
-import com.datastax.driver.core.{Cluster, Session}
+import com.datastax.oss.driver.api.core.session.Session
+import com.datastax.oss.driver.api.core.{CqlIdentifier, CqlSession, CqlSessionBuilder}
+
 import scala.concurrent.blocking
 import scala.util.control.NonFatal
 import scala.util.{Failure, Success, Try}
@@ -34,13 +36,13 @@ class DefaultSessionProvider(
   errorHandler: Throwable => Throwable = identity
 ) extends SessionProvider {
 
-  val cluster: Cluster = builder(Cluster.builder).build
+  val cluster: CqlSessionBuilder = builder(new CqlSessionBuilder)
 
   /**
    * Initializes the keySpace with the given name on
    * the specified Session.
    */
-  protected[this] def initKeySpace(session: Session, space: String): Session = blocking {
+  protected[this] def initKeySpace(session: CqlSession, space: String): Session = blocking {
     blocking {
       val query = keyspaceQuery.map(_.queryString).getOrElse(defaultKeyspaceCreationQuery(space))
       logger.info(s"Automatically initialising keyspace $space with query $query")
@@ -55,7 +57,7 @@ class DefaultSessionProvider(
   protected[this] def createSession(keySpace: String): Session = {
     Try {
       val session = blocking {
-        cluster.connect
+        cluster.withKeyspace(CqlIdentifier.fromInternal(keySpace)).build()
       }
 
       if (autoinit) {

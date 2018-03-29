@@ -15,7 +15,10 @@
  */
 package com.outworkers.phantom
 
+import java.net.InetSocketAddress
+
 import com.datastax.oss.driver.api.core.CqlSessionBuilder
+import com.outworkers.phantom.connectors.ContactPoint.DefaultPorts
 
 package object connectors {
 
@@ -25,4 +28,10 @@ package object connectors {
 
   @deprecated("Renamed to the more descriptive CassandraConnection", "2.0.0")
   type KeySpaceDef = com.outworkers.phantom.connectors.CassandraConnection
+
+  implicit class InetSttringHelper(val host: String) extends AnyVal {
+    def inet(port: Int = DefaultPorts.live): InetSocketAddress = {
+      InetSocketAddress.createUnresolved(host, port)
+    }
+  }
 }
