@@ -65,19 +65,24 @@ object Publishing {
       docsFolder
     ).getOrElse("Docs folder [%s] is outside of this VCS repository with base directory [%s]!" format(docsFolder, base))
 
-
-    vcs(st).add(relativePath) !! log
-    vcs(st).add(relativeDocsPath) !! log
+    vcs(st).add(relativePath, relativeDocsPath) !! log
     val status = (vcs(st).status !!) trim
 
+    vcs(st)
+
+    status !! log
     val newState = if (status.nonEmpty) {
       val (state, msg) = settings.runTask(releaseCommitMessage, st)
-      vcs(state).commit(msg, sign) ! log
+      vcs(state).commit(msg, sign) !! log
       state
     } else {
-      // nothing to commit. this happens if the version.sbt file hasn't changed.
+      // nothing to commit. this happens if the version.sbt file hasn't changed or no docs have been added.
       st
     }
+    vcs(newState).status !! log
+    
+    println(s"VCS modified files: ${vcs(newState).hasModifiedFiles}")
+
     newState
   }
 
@@ -136,7 +141,7 @@ object Publishing {
   lazy val bintraySettings: Seq[Def.Setting[_]] = Seq(
     publishMavenStyle := true,
     bintrayOrganization := Some("outworkers"),
-    bintrayRepository := { if (scalaVersion.value.trim.endsWith("SNAPSHOT")) "oss-snapshots" else "oss-releases" },
+    bintrayRepository := { if (version.value.trim.endsWith("SNAPSHOT")) "oss-snapshots" else "oss-releases" },
     bintrayReleaseOnPublish in ThisBuild := true,
     publishArtifact in Test := false,
     pomIncludeRepository := { _ => true},
@@ -187,7 +192,13 @@ object Publishing {
         </developers>
   )
 
-  def effectiveSettings: Seq[Def.Setting[_]] = releaseSettings ++ mavenSettings
+  def effectiveSettings: Seq[Def.Setting[_]] = {
+    if (publishToMaven) {
+      mavenSettings ++ releaseSettings
+    } else {
+      bintraySettings
+    }
+  }
 
   /**
    * This exists because SBT is not capable of reloading publishing configuration during tasks or commands.
