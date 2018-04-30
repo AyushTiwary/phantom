@@ -32,7 +32,7 @@ abstract class PrimitivesCassandra22 extends Table[
 
   object pkey extends StringColumn with PartitionKey
 
-  object short extends SmallIntColumn
+  object short extends SmallIntColumn with Index
 
   object byte extends TinyIntColumn
 
