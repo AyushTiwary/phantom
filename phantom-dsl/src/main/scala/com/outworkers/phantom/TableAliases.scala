@@ -92,6 +92,7 @@ trait TableAliases[T <: CassandraTable[T, R], R] { self: CassandraTable[T, R] =>
   class BigDecimalColumn()(implicit ev: Primitive[BigDecimal]) extends PrimitiveColumn[BigDecimal]
   class BlobColumn()(implicit ev: Primitive[ByteBuffer]) extends PrimitiveColumn[ByteBuffer]
   class BigIntColumn()(implicit ev: Primitive[BigInt]) extends PrimitiveColumn[BigInt]
+  class ShortColumn()(implicit ev: Primitive[Short]) extends PrimitiveColumn[Short]
   class BooleanColumn()(implicit ev: Primitive[Boolean]) extends PrimitiveColumn[Boolean]
   class DateColumn()(implicit ev: Primitive[Date]) extends PrimitiveColumn[Date]
   class DateTimeColumn()(implicit ev: Primitive[DateTime]) extends PrimitiveColumn[DateTime]

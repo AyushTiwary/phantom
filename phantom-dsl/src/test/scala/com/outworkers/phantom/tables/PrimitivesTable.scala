@@ -28,7 +28,8 @@ case class PrimitiveRecord(
   int: Int,
   date: java.util.Date,
   uuid: java.util.UUID,
-  bi: BigInt
+  bi: BigInt,
+  short: Short
 )
 
 abstract class PrimitivesTable extends Table[PrimitivesTable, PrimitiveRecord] {
@@ -53,6 +54,8 @@ abstract class PrimitivesTable extends Table[PrimitivesTable, PrimitiveRecord] {
   object uuid extends UUIDColumn
 
   object bi extends BigIntColumn
+
+  object short extends ShortColumn
 }
 
 case class OldPrimitiveRecord(
