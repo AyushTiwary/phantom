@@ -274,7 +274,7 @@ class PreparedInsertQueryTest extends PhantomSuite with TwitterFutures {
         .prepareAsync()
        store <- query.bind(sample).future()
       res <- database.primitives.select.where(_.pkey eqs sample.pkey).one()
-      res2 <- database.primitives.select.where(_.short eqs sample.short).one()
+      res2 <- database.primitives.select.where(_.short eqs (5: Short)).one()
     } yield res
 
     whenReady(chain) { res =>
