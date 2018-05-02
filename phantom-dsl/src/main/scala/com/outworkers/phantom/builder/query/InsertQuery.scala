@@ -26,10 +26,22 @@ import com.outworkers.phantom.builder.syntax.CQLSyntax
 import com.outworkers.phantom.column.AbstractColumn
 import com.outworkers.phantom.connectors.KeySpace
 import org.joda.time.DateTime
-import shapeless.ops.hlist.Reverse
+import shapeless.ops.hlist.{Prepend, Reverse}
 import shapeless.{::, =:!=, HList, HNil}
 
 import scala.concurrent.ExecutionContextExecutor
+
+trait ValueHolder[T, HL <: HList] {
+  def value: T
+}
+
+object ValueHolder {
+
+  implicit def valueToHolder[T](value: T): ValueHolder[T, HNil] = new Single[T](value)
+
+  case class Single[T](value: T) extends ValueHolder[T, HNil]
+  case class Prepared[T](value: T) extends ValueHolder[T, T :: HNil]
+}
 
 case class InsertQuery[
   Table <: CassandraTable[Table, Record],
@@ -95,6 +107,24 @@ case class InsertQuery[
 
     copy(columnsPart = appendedCols, valuePart = appendedVals)
   }
+
+  def valueN[RR, HL <: HList, Out <: HList](
+    col: Table => AbstractColumn[RR],
+    value: ValueHolder[RR, HL]
+  )(implicit prepend: Prepend.Aux[HL, PS, Out]): InsertQuery[Table, Record, Status, Out] = {
+    val cql = col(table).asCql(value.value)
+
+    new InsertQuery(
+      table = table,
+      init = init,
+      columnsPart = columnsPart append CQLQuery(col(table).name),
+      valuePart = valuePart append CQLQuery(cql),
+      usingPart = usingPart,
+      lightweightPart = lightweightPart,
+      options = options
+    )
+  }
+
 
   def value[RR](
     col: Table => AbstractColumn[RR],

@@ -96,6 +96,7 @@ class PreparedInsertQueryTest extends PhantomSuite with TwitterFutures {
       .p_value(_.date, ?)
       .p_value(_.uuid, ?)
       .p_value(_.bi, ?)
+      .p_value(_.short, ?)
       .prepare()
 
     val chain = for {
