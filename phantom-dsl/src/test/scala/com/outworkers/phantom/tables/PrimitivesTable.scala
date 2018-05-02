@@ -55,7 +55,7 @@ abstract class PrimitivesTable extends Table[PrimitivesTable, PrimitiveRecord] {
 
   object bi extends BigIntColumn
 
-  object short extends ShortColumn
+  object short extends ShortColumn with Index
 }
 
 case class OldPrimitiveRecord(
