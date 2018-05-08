@@ -21,6 +21,23 @@ import com.outworkers.phantom.finagle._
 import com.outworkers.phantom.tables.{DerivedRecord, PrimitiveCassandra22, PrimitiveRecord, Recipe}
 import com.outworkers.util.samplers._
 
+import scala.concurrent.Future
+
+
+class DB extends Database[DB](???) {
+  abstract class P extends Table[P, Int] {
+    object tId extends IntColumn with PartitionKey
+    object pId extends IntColumn with PrimaryKey
+    object rV  extends SmallIntColumn with Index
+
+    override def fromRow(row: Row): Int = pId(row)
+  }
+  private object p extends P with Connector {
+    def select(tId: Int): Future[List[Int]] =
+      select(_.pId).where(_.tId eqs tId).and(_.rV eqs (1: Short)).allowFiltering.fetch()
+  }
+}
+
 class PreparedInsertQueryTest extends PhantomSuite with TwitterFutures {
 
   override def beforeAll(): Unit = {
